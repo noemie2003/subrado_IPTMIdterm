@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Account;
+use App\Mail\TransactionMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class TransactionController extends Controller
 {
@@ -57,7 +59,7 @@ class TransactionController extends Controller
             }
 
             // Create the transaction
-            Transaction::create([
+            $transaction = Transaction::create([
                 'account_id' => $validated['account_id'],
                 'transaction_number' => $validated['transaction_number'],
                 'type' => $validated['type'],
@@ -79,6 +81,11 @@ class TransactionController extends Controller
             }
             
             $account->save();
+
+            // Send transaction email notification
+            if ($account->customer && $account->customer->email) {
+                Mail::to($account->customer->email)->send(new TransactionMail($transaction));
+            }
         });
 
         return redirect()->route('transactions.index')
