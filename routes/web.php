@@ -52,6 +52,10 @@ Route::middleware('auth')->group(function () {
     // SOA routes
     Route::get('/soa', [ManagementController::class, 'soaGeneration'])->name('soa.index');
     Route::get('/soa/generate-all', [ManagementController::class, 'generateAllSOAs'])->name('soa.generateAll');
+    // Reports
+    Route::get('/reports', [ManagementController::class, 'reportsIndex'])->name('reports.index');
+    Route::get('/reports/{year}/{month}', [ManagementController::class, 'reportsShow'])->name('reports.show');
+    Route::get('/reports/generate/{year}/{month}', [ManagementController::class, 'generateMonthlyReportPdf'])->name('reports.generate');
 });
 
 require __DIR__.'/auth.php';
